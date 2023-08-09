@@ -1,0 +1,10 @@
+package runners;
+
+@RunWith(Cucumber.class)
+@CucumberOptions(
+        features = "src/test/resources/functionalTests",
+)
+
+public class TestRunner {
+
+}

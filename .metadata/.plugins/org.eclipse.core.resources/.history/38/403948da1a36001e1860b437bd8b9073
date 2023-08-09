@@ -1,0 +1,86 @@
+package stepDefinitions;
+
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Assert;
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
+public class API_TestSteps {
+	
+	private static final String BASE_URL = "https://simple-books-api.glitch.me";
+	private static Response response;
+	private static Response response1;
+	private static String jsonString;
+	private static String bookId;
+	int bookCount;
+	private final String CLIENT_NAME="Postman";
+	private final String CLIENT_EMAIL="chaitalmagdum@gmail.com";
+	private static String token;
+	
+	@Given("user has some books available on URI")
+	public void user_has_some_books_available_on_uri() {
+	    
+		RestAssured.baseURI = BASE_URL;
+		RequestSpecification request = RestAssured.given();
+		response = request.get("/books");
+
+		jsonString = response.asString();
+		System.out.println("json string " + jsonString);
+		List<String> idList=JsonPath.from(jsonString).get("id");
+		bookCount = idList.size();
+		Assert.assertTrue(idList.size() > 0);
+	}
+
+	@When("user orders a book from existing list")
+	public void user_orders_a_book_from_existing_list() {
+	    
+		RestAssured.baseURI = BASE_URL;
+		
+		RequestSpecification request = RestAssured.given();
+		RequestSpecification request1 = RestAssured.given();
+		
+		request.header("Content-Type", "application/json");
+		response = request.body("{ \"clientName\":\"" + "Postman" + "\", \"clientEmail\":\"" 
+		+ "manas157@gmail.com" + "\"}")
+				.post("/api-clients/");
+		
+		String jsonString = response.asString();
+		token = JsonPath.from(jsonString).get("accessToken");
+	
+		System.out.println(token);
+		
+		request1.header("Authorization", "Bearer " + token)
+		.header("Content-Type", "application/json");
+		
+		response1 = request1.body("{ \"bookId\": \"" + "6" + "\", " +
+				"\"customerName\": \"" + "Nitin" + "\" "
+				).post("/orders/");
+				
+		System.out.println("Resp body -- " +response1.getStatusCode());
+	}
+
+	@Then("order should be placed successfully")
+	public void order_should_be_placed_successfully() {
+	    
+		Assert.assertEquals(201, response.getStatusCode());
+	}
+
+	@When("user removes a book from list")
+	public void user_removes_a_book_from_list() {
+	    
+		
+	}
+
+	@Then("book should be removed from existing list")
+	public void book_should_be_removed_from_existing_list() {
+	    
+		
+	}
+}

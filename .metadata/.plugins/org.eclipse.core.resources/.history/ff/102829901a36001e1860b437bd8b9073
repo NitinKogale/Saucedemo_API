@@ -1,0 +1,8 @@
+Feature: Books API testing
+
+  Scenario: Verify user able to action http methods
+    Given user has some books available on URI
+    When user add a book to existing list
+    Then book should be added successfully
+    When user removes a book from list
+    Then book should be removed from existing list

@@ -1,0 +1,8 @@
+Feature: Books API testing
+
+  Scenario: Verify user able to action http methods
+    Given user has some books available on URI
+    When user orders a book from existing list
+    Then order should be placed successfully
+    When user deletes an order
+    Then book should be removed from existing list
